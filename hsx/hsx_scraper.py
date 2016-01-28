@@ -10,47 +10,39 @@ price_url = "http://www.hsx.com/chart/detail_chart_data.php?id={}"
 
 #This is the expensive way of loading all the prices
 def get_all_prices():
-    prices = {}
-    last_price = None
-
     start_time = datetime.now()
     page_count = 1
     curr_page = 1
 
     films = {}
 
-    try:
-        while curr_page <= page_count:
-            r = requests.get('http://www.hsx.com/security/list.php?id=1&sfield=name&sdir=asc&page={}'.format(curr_page))
-            soup = BeautifulSoup(r.text)
-            if page_count == 1:
-                page_count = int(soup.text[soup.text.find('Page 1 of')+9:soup.text.find('Page 1 of')+12])
-                #print('Scraping {} pages from hsx.com/securities/list.php'.format(page_count))
-            film_list = soup.find('tbody').findAll('tr')[1:]
-            #print('\t\tPage {}'.format(curr_page))    
-            for film in film_list:
-                film = film.text.strip().split('\n')
-                movement = film[3].replace('(','').replace(')','').split('\xa0')
-                films[film[1]] = (film[0], film[2], movement[0], movement[1])
-                #print('{0}: {1}'.format(film[1], films[film[1]]))
-            curr_page += 1
-    except:
-        print('Uhh, something happened at {}. Trying again...'.format(datetime.now()))
-        time.sleep(60)
-        continuedf
+    while curr_page <= page_count:
+        r = requests.get('http://www.hsx.com/security/list.php?id=1&sfield=name&sdir=asc&page={}'.format(curr_page))
+        soup = BeautifulSoup(r.text)
+        if page_count == 1:
+            page_count = int(soup.text[soup.text.find('Page 1 of')+9:soup.text.find('Page 1 of')+12])
+            print('Scraping {} pages from hsx.com/securities/list.php'.format(page_count))
+        film_list = soup.find('tbody').findAll('tr')[1:]
+        print('\t\tPage {}'.format(curr_page),end='\r')
+        for film in film_list:
+            film = film.text.strip().split('\n')
+            movement = film[3].replace('(','').replace(')','').split('\xa0')
+            films[film[1]] = (film[0], film[2], movement[0], movement[1])
+            #print('{0}: {1}'.format(film[1], films[film[1]]))
+        curr_page += 1
 
     df = DataFrame(films, index=['Name','Price','MovementPrice', 'MovementPercent']).T
     df['MovementPercent'] = df['MovementPercent'].map(lambda x: float(x.replace('%','')))
     df['Price'] = df['Price'].map(lambda x: float(x.replace('H$', '')))
     df['MovementPrice'] = df['MovementPrice'].map(lambda x: float(x.replace('H$', '')))
     
+    '''
     prices[datetime.now()] = df['Price']
     if last_price is not None:
         diff = df['Price'] - last_price
         print(datetime.now(), '\n', diff[diff != 0])
     last_price = df['Price']
-
-    df = DataFrame(prices)
+    '''
     return df
 
 sec_to_id = Series()
@@ -122,11 +114,7 @@ if __name__ == '__main__':
             plot_securities(secs)
     elif len(sys.argv) == 1:
         df = get_all_prices()
-        print(df)
-        
+        print('Summary:')
+        print(df.sort('Price')[['Name','Price']])
 
 
-'''
-
-
-'''
