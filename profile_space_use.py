@@ -104,3 +104,11 @@ def profileSpace(folder):
     blocks = getListOfBlocks(folder)
     print('\n\t{0}: {1} gb'.format(folder, int(size/1000000)/1000))
     print('\n'.join(blocks))
+
+if __name__ == '__main__':
+    import sys
+    if len(sys.argv) > 1:
+        folder = sys.argv[1]
+    else:
+        folder = os.getcwd()
+    profileSpace(folder)
