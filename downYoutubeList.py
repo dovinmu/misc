@@ -8,6 +8,8 @@ from pytube import YouTube
 import os
 import random
 
+from downYoutubeMovie import *
+
 def crawl(url):
     '''
     Adapted from youParse.py Version: 1.5
@@ -58,7 +60,6 @@ def crawl(url):
         exit(1)
     return all_url
 
-
 def downAll(urls, playlistName='playlist'):
     try:
         os.chdir(playlistName)
@@ -66,18 +67,9 @@ def downAll(urls, playlistName='playlist'):
         os.mkdir(playlistName)
         os.chdir(playlistName)
     for url in urls:
-        yt = YouTube(url)
-        yt.get_videos()
-        print('Got "{}"'.format(yt.filename))
-        if len(yt.filter(resolution='480p')) == 0:
-            if len(yt.filter(resolution='360p')) == 0:
-                print("Can't find 480p or 360p: {}".format(yt.filename))
-                continue
-            video = yt.get('mp4', '360p')
-        else:
-            video = yt.get('mp4', '480p')
-        video.download(os.getcwd())
+        down(url)
         time.sleep(random.randint(10,20)
+
 
 if len(sys.argv) < 2 or len(sys.argv) > 2:
     print('USAGE: python downYoutubeList.py YOUTUBEurl')
