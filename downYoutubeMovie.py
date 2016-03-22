@@ -3,10 +3,14 @@ import sys
 import time
 from pytube import YouTube
 
-def down(url, directory):
+def down(url, directory=None, skippable=False):
+    if not directory:
+        directory = os.getcwd()
     yt = YouTube(url)
     yt.get_videos()
     print('Found "{}"'.format(yt.filename))
+    if skippable and input("Download? [y]/n: ") != '':
+        return
     if len(yt.filter(resolution='480p')) == 0:
         if len(yt.filter(resolution='360p')) == 0:
             print("Can't find 480p or 360p: {}".format(yt.filename))
@@ -19,7 +23,6 @@ def down(url, directory):
 
 if len(sys.argv) < 2 or len(sys.argv) > 3:
     print('USAGE: python downYoutubeMovie.py YOUTUBEurl [/full/directory/name]')
-    exit(1)
 else:
     url = sys.argv[1]
     if 'http' not in url:

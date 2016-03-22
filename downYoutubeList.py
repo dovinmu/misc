@@ -30,8 +30,6 @@ def crawl(url):
 
     else:
         print('Incorrect Playlist.')
-        exit(1)
-
     try:
         yTUBE = urllib.request.urlopen(url).read()
         sTUBE = str(yTUBE)
@@ -57,24 +55,21 @@ def crawl(url):
             i = i + 1
     else:
         print('No videos found.')
-        exit(1)
     return all_url
 
-def downAll(urls, playlistName='playlist'):
+def downAll(urls, playlistName='playlist', skippable=False):
     try:
         os.chdir(playlistName)
     except:
         os.mkdir(playlistName)
         os.chdir(playlistName)
     for url in urls:
-        down(url)
-        time.sleep(random.randint(10,20)
+        down(url, skippable=skippable)
+        time.sleep(random.randint(10,20))
 
 
 if len(sys.argv) < 2 or len(sys.argv) > 2:
     print('USAGE: python downYoutubeList.py YOUTUBEurl')
-    exit(1)
-
 else:
     url = sys.argv[1]
     if 'http' not in url:
