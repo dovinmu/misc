@@ -6,7 +6,11 @@ from pytube import YouTube
 def down(url, directory=None, skippable=False):
     if not directory:
         directory = os.getcwd()
-    yt = YouTube(url)
+    try:
+        yt = YouTube(url)
+    except:
+        print('Could not get URL "{}"'.format(url))
+        return
     yt.get_videos()
     print('Found "{}"'.format(yt.filename))
     if skippable and input("Download? [y]/n: ") != '':
@@ -18,8 +22,11 @@ def down(url, directory=None, skippable=False):
         video = yt.get('mp4', '360p')
     else:
         video = yt.get('mp4', '480p')
-    video.download(os.getcwd())
-    print('...download finished')
+    try:
+        video.download(os.getcwd())
+        print('...download finished')
+    except OSError:
+        print("Could not write file")
 
 if len(sys.argv) < 2 or len(sys.argv) > 3:
     print('USAGE: python downYoutubeMovie.py YOUTUBEurl [/full/directory/name]')
