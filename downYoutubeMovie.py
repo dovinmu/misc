@@ -3,7 +3,7 @@ import sys
 import time
 from pytube import YouTube
 
-def down(url, directory=None, skippable=False):
+def down(url, directory=None, skippable=False, ftype=None):
     if not directory:
         directory = os.getcwd()
     try:
@@ -27,6 +27,15 @@ def down(url, directory=None, skippable=False):
         print('...download finished')
     except OSError:
         print("Could not write file")
+    if ftype == 'mp3':
+        fname = video.filename
+        mp4_to_mp3(fname)
+
+def mp4_to_mp3(fname):
+    print('converting {} to mp3'.format(fname))
+    call(["mplayer", "-novideo", "-nocorrect-pts", "-ao", "pcm:waveheader", indir + "/" + filename + ".mp4"])
+    call(["lame", "-h", "-b", "192", "audiodump.wav", outdir + "/" + filename + ".mp3"])
+    os.remove("audiodump.wav")
 
 if len(sys.argv) < 2 or len(sys.argv) > 3:
     print('USAGE: python downYoutubeMovie.py YOUTUBEurl [/full/directory/name]')
@@ -38,4 +47,8 @@ else:
         directory = sys.argv[2]
     else:
         directory = os.getcwd()
-    down(url, directory)
+    if len(sys.argv) > 3:
+        ftype = sys.argv[3]
+    else:
+        ftype = None
+    down(url, directory, ftype)

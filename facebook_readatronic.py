@@ -5,7 +5,7 @@ graph = GraphAPI(APP_TOKEN)
 profile = graph.get_object('me')
 posts = graph.get_connections(profile['id'], 'posts')
 
-def some_action(post):
+def print_post(post):
     if 'name' in post['from']:
         print('\t\t', post['from']['name'])
     else:

@@ -65,7 +65,7 @@ def downAll(urls, playlistName='playlist', skippable=False):
         os.chdir(playlistName)
     for url in urls:
         down(url, skippable=skippable)
-        time.sleep(random.randint(10,20))
+        time.sleep(random.randint(3,10))
 
 
 if len(sys.argv) < 2 or len(sys.argv) > 2:
