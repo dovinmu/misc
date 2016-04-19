@@ -14,7 +14,7 @@ def down(url, directory=None, skippable=False, ftype=None):
         return
     yt.get_videos()
     print('Found "{}"'.format(yt.filename))
-    if skippable and input("Download? [y]/n: ") != '':
+    if skippable and input("Download? [y]/n: ") not in ['','y']:
         return
     if len(yt.filter(resolution='480p')) == 0:
         if len(yt.filter(resolution='360p')) == 0:

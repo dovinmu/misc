@@ -69,14 +69,18 @@ def downAll(urls, playlistName='playlist', skippable=False, ftype=None):
 
 
 if len(sys.argv) < 2 or len(sys.argv) > 3:
-    print('USAGE: python downYoutubeList.py YOUTUBEurl [filetype]')
+    print('USAGE: python downYoutubeList.py YOUTUBEurl [-s: skippable] [-f: <filetype:mp3>]')
 else:
     url = sys.argv[1]
     if 'http' not in url:
         url = 'http://' + url
-    if len(sys.argv) == 3:
-        filetype = sys.argv[2]
+    if '-s' in sys.argv:
+        skippable = True
+    else:
+        skippable = False
+    if '-f' in sys.argv:
+        filetype = sys.argv[sys.argv.index('-f')+1]
     else:
         filetype = None
     urls = crawl(url)
-    downAll(urls, ftype=filetype)
+    downAll(urls, ftype=filetype, skippable=skippable)
