@@ -57,22 +57,26 @@ def crawl(url):
         print('No videos found.')
     return all_url
 
-def downAll(urls, playlistName='playlist', skippable=False):
+def downAll(urls, playlistName='playlist', skippable=False, ftype=None):
     try:
         os.chdir(playlistName)
     except:
         os.mkdir(playlistName)
         os.chdir(playlistName)
     for url in urls:
-        down(url, skippable=skippable)
+        down(url, skippable=skippable, ftype=filetype)
         time.sleep(random.randint(3,10))
 
 
-if len(sys.argv) < 2 or len(sys.argv) > 2:
-    print('USAGE: python downYoutubeList.py YOUTUBEurl')
+if len(sys.argv) < 2 or len(sys.argv) > 3:
+    print('USAGE: python downYoutubeList.py YOUTUBEurl [filetype]')
 else:
     url = sys.argv[1]
     if 'http' not in url:
         url = 'http://' + url
+    if len(sys.argv) == 3:
+        filetype = sys.argv[2]
+    else:
+        filetype = None
     urls = crawl(url)
-    downAll(urls)
+    downAll(urls, ftype=filetype)
