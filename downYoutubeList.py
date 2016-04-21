@@ -13,6 +13,7 @@ from downYoutubeMovie import *
 def crawl(url):
     '''
     Adapted from youParse.py Version: 1.5
+
     Author: pantuts
     Email: pantuts@gmail.com
     Agreement: You can use, modify, or redistribute this tool under
@@ -39,6 +40,7 @@ def crawl(url):
     tmp_mat = re.compile(r'watch\?v=\S+?list=' + cPL)
     mat = re.findall(tmp_mat, sTUBE)
 
+    all_url = []
     if mat:
         for PL in mat:
             yPL = str(PL)
@@ -46,10 +48,16 @@ def crawl(url):
                 yPL_amp = yPL.index('&')
             final_url.append('http://www.youtube.com/' + yPL[:yPL_amp])
 
-        all_url = list(set(final_url))
+        all_url.append(final_url.pop(0))
+        while final_url:
+            el = final_url.pop(0)
+            if all_url[-1] != el:
+                all_url.append(el)
 
         i = 0
         while i < len(all_url):
+            #yt = YouTube(all_url[i])
+            #sys.stdout.write(yt.filename + ', ' + all_url[i] + '\n')
             sys.stdout.write(all_url[i] + '\n')
             time.sleep(0.04)
             i = i + 1
@@ -57,19 +65,26 @@ def crawl(url):
         print('No videos found.')
     return all_url
 
-def downAll(urls, playlistName='playlist', skippable=False, ftype=None):
+def downAll(urls, playlistName='playlist', skippable=False, ftype=None, mask=None):
     try:
         os.chdir(playlistName)
     except:
         os.mkdir(playlistName)
         os.chdir(playlistName)
-    for url in urls:
-        down(url, skippable=skippable, ftype=filetype)
-        time.sleep(random.randint(3,10))
+    if not mask:
+        mask = '1'
+    if len(mask) < len(urls):
+        el = mask[-1]
+        mask = mask + el * (len(urls) - len(mask))
+    for i in range(len(urls)):
+        url = urls[i]
+        if mask[i] == '1':
+            down(url, skippable=skippable, ftype=filetype)
+            time.sleep(random.randint(3,10))
 
 
-if len(sys.argv) < 2 or len(sys.argv) > 3:
-    print('USAGE: python downYoutubeList.py YOUTUBEurl [-s: skippable] [-f: <filetype:mp3>]')
+if len(sys.argv) < 2 or len(sys.argv) > 4:
+    print('USAGE: python downYoutubeList.py YOUTUBEurl [-s: skippable] [-f: <filetype:mp3>] [-mask: <bitstring>]')
 else:
     url = sys.argv[1]
     if 'http' not in url:
@@ -82,5 +97,9 @@ else:
         filetype = sys.argv[sys.argv.index('-f')+1]
     else:
         filetype = None
+    if '-mask' in sys.argv:
+        mask = sys.argv[sys.argv.index('-mask')+1]
+    else:
+        mask = None
     urls = crawl(url)
-    downAll(urls, ftype=filetype, skippable=skippable)
+    downAll(urls, ftype=filetype, skippable=skippable, mask=mask)
