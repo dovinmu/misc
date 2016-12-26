@@ -24,33 +24,38 @@ def down(url, directory=None, skippable=False, ftype=None):
     else:
         video = yt.get('mp4', '480p')
     try:
-        video.download(os.getcwd())
+        video.download(directory)
         print('...download finished')
-    except OSError:
-        print("Could not write file")
+    except OSError as e:
+        print("Could not write file:", e)
     if ftype == 'mp3':
         fname = video.filename
         mp4_to_mp3(fname, directory)
 
 def mp4_to_mp3(fname, directory):
-    print('converting {} to mp3'.format(fname))
+    fname = fname.replace(' ', '\ ')
+    fname = fname.replace('(', '\(')
+    fname = fname.replace(')', '\)')
+    print('converting to mp3: {}'.format(directory + '/' + fname + '.mp4'))
     call(["mplayer", "-novideo", "-nocorrect-pts", "-ao", "pcm:waveheader", directory + "/" + fname + ".mp4"])
+    print('mplayer finished')
     call(["lame", "-h", "-b", "192", "audiodump.wav", directory + "/" + fname + ".mp3"])
     os.remove("audiodump.wav")
-    os.remove(fname + '.mp4')
+    os.remove(directory + '/' + fname + '.mp4')
 
-if len(sys.argv) < 2 or len(sys.argv) > 4:
+if len(sys.argv) < 2 or len(sys.argv) > 6:
     print('USAGE: python downYoutubeMovie.py YOUTUBEurl [/full/directory/name] [filetype {mp4, mp3}]')
 else:
     url = sys.argv[1]
     if 'http' not in url:
         url = 'http://' + url
-    if len(sys.argv) > 2:
-        directory = sys.argv[2]
+    if '-f' in sys.argv:
+        filetype = sys.argv[sys.argv.index('-f')+1]
     else:
-        directory = os.getcwd()
-    if len(sys.argv) > 3:
-        ftype = sys.argv[3]
+        filetype = None
+    if '--dir' in sys.argv:
+        directory = sys.argv[sys.argv.index('--dir')+1]
     else:
-        ftype = None
-    down(url, directory=directory, ftype=ftype)
+        directory = '.'
+    print(directory, filetype)
+    down(url, directory=directory, ftype=filetype)

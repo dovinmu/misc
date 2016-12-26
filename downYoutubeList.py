@@ -65,12 +65,13 @@ def crawl(url):
         print('No videos found.')
     return all_url
 
-def downAll(urls, playlistName='playlist', skippable=False, ftype=None, mask=None):
+def downAll(urls, playlistName=None, skippable=False, ftype=None, mask=None):
     try:
-        os.chdir(playlistName)
-    except:
         os.mkdir(playlistName)
         os.chdir(playlistName)
+    except:
+        pass
+        #os.chdir(playlistName)
     if not mask:
         mask = '1'
     if len(mask) < len(urls):
@@ -80,10 +81,10 @@ def downAll(urls, playlistName='playlist', skippable=False, ftype=None, mask=Non
         url = urls[i]
         if mask[i] == '1':
             down(url, skippable=skippable, ftype=filetype)
-            time.sleep(random.randint(3,10))
+            time.sleep(random.randint(3, 10))
+    print('saved to {}'.format(os.getcwd()))
 
-
-if len(sys.argv) < 2 or len(sys.argv) > 4:
+if len(sys.argv) < 2 or len(sys.argv) > 7:
     print('USAGE: python downYoutubeList.py YOUTUBEurl [-s: skippable] [-f: <filetype:mp3>] [-mask: <bitstring>]')
 else:
     url = sys.argv[1]
@@ -97,9 +98,14 @@ else:
         filetype = sys.argv[sys.argv.index('-f')+1]
     else:
         filetype = None
-    if '-mask' in sys.argv:
+    if '--mask' in sys.argv:
         mask = sys.argv[sys.argv.index('-mask')+1]
     else:
         mask = None
+    if '--dir' in sys.argv:
+        directory = sys.argv[sys.argv.index('--dir')+1]
+    else:
+        directory = '.'
+    os.chdir(directory)
     urls = crawl(url)
     downAll(urls, ftype=filetype, skippable=skippable, mask=mask)
