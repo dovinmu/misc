@@ -1,13 +1,13 @@
 def loadWordSet():
-     s = set()
-     try:
-         with open('/usr/share/dict/american-english', 'r') as f:
-             for line in f:
-                 print(line)
-                 s.add(line.strip())
+    s = set()
+    try:
+        with open('/usr/share/dict/american-english', 'r') as f:
+            for line in f:
+                #print(line)
+                s.add(line.strip())
     except:
         print("Sorry! This only words on a linux machine currently.")
-     return s
+    return s
 
 def getPlaintext(url):
     import requests
@@ -81,20 +81,21 @@ def findAcrostic(text, wordset, level='paragraph',min_word_len=4, max_word_len=1
             if len(charbuf) > max_word_len:
                 charbuf = charbuf[1:]
 
-def gutenbergAcrostic(url):
-    print('processing url {}'.format(url))
+def gutenbergAcrostic(url, wordset):
+    #print('processing url {}'.format(url))
     text = getPlaintext(url)
     text = snipGutenbergMetadata(text)
-    print('\t\t\tparagraphs'.upper())
+    print('\t\t  paragraphs'.upper())
     findAcrostic(text, wordset, level='paragraph', min_word_len=5)
-    print('\t\t\twords'.upper())
-    findAcrostic(text, wordset, level='word', min_word_len=7)
+    print('\t\t  words'.upper())
+    findAcrostic(text, wordset, level='word', min_word_len=6)
 
 if __name__ == "__main__":
+    wordset = loadWordSet()
     for name,url in {
         'A Christmas Carol':'http://www.gutenberg.org/cache/epub/46/pg46.txt',
         'Pride and Prejudice':'http://www.gutenberg.org/files/1342/1342-0.txt',
         "Alice's Adventures in Wonderland":'http://www.gutenberg.org/files/11/11-0.txt'
     }.items():
-        print(name)
-        gutenbergAcrostic(url)
+        print('\n\t\t'+name.upper())
+        gutenbergAcrostic(url, wordset)
